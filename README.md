@@ -4,7 +4,13 @@ A two-player 3D arkanoid, written in C# (with UNITY). This is a prototype, so it
 
 
 
-**Note:** Unity version: 2019.4.1f1.
+**Notes:**
+
+- Unity version: 2019.4.1f1.
+
+- Input System package version: 1.0.0.
+
+
 
 This readme will be added later.
 
