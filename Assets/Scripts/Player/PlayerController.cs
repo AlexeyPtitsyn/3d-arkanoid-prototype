@@ -7,10 +7,10 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField]
+        [SerializeField, Tooltip("Attach camera 1 here")]
         private Camera _player1Camera;
 
-        [SerializeField]
+        [SerializeField, Tooltip("Tie camera 2 here")]
         private Camera _player2Camera;
 
         [SerializeField, Range(1, 10)]
@@ -34,18 +34,46 @@ namespace Player
             {
                 Debug.LogError("Player cameras are not set. Set them.");
             }
+
+            _player1Camera.GetComponent<CameraController>().OnCollision += OnCamera1Collision;
+            _player2Camera.GetComponent<CameraController>().OnCollision += OnCamera2Collision;
         }
 
+        /**
+         * <summary>Prevent Player 1 from escape</summary>
+         */
+        private void OnCamera1Collision(Collision collision)
+        {
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                _player1Speed = contact.normal * 1.5f;
+            }
+        }
+
+        /**
+         * <summary>Prevent Player 2 from escape</summary>
+         */
+        private void OnCamera2Collision(Collision collision)
+        {
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                _player2Speed = contact.normal * 1.5f;
+            }
+        }
+
+        /**
+         * <summary>Transform joystick/keyboard controls force to vector3</summary>
+         * <param name="axis">Vecto2 input axis.</param>
+         * <returns>Vector3 of camera movement direction</returns>
+         */
         private Vector3 AxisToPlayer(Vector2 axis)
         {
             return new Vector3(axis.x, axis.y, 0);
         }
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            Debug.Log("Collision!");
-        }
-
+        /**
+         * <summary>Move cameras while update</summary>
+         */
         private void MoveCameras()
         {
             var directionPlayer1 = _controls.GameMap.Player1Move.ReadValue<Vector2>();
