@@ -5,33 +5,72 @@ using static UnityEngine.InputSystem.InputAction;
 
 namespace Player
 {
-
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField]
+        private Camera _player1Camera;
+
+        [SerializeField]
+        private Camera _player2Camera;
+
+        [SerializeField, Range(1, 10)]
+        private float _moveSpeed = 2f;
+
+        [SerializeField, Range(1.001f, 2), Tooltip("How fast the player will be slown down.")]
+        private float _inertiaFactor = 1.05f;
+
         private PlayerControls _controls;
+
+        private Vector2 _player1Speed = new Vector2(0, 0);
+        private Vector2 _player2Speed = new Vector2(0, 0);
 
         private void Awake()
         {
             _controls = new PlayerControls();
 
             _controls.GameMap.LaunchBall.performed += OnLaunchBall;
+
+            if(!_player1Camera || !_player2Camera)
+            {
+                Debug.LogError("Player cameras are not set. Set them.");
+            }
         }
 
-        private void Update()
+        private Vector3 AxisToPlayer(Vector2 axis)
+        {
+            return new Vector3(axis.x, axis.y, 0);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            Debug.Log("Collision!");
+        }
+
+        private void MoveCameras()
         {
             var directionPlayer1 = _controls.GameMap.Player1Move.ReadValue<Vector2>();
-            if(directionPlayer1 != Vector2.zero)
+            if (directionPlayer1 != Vector2.zero)
             {
-                var camera1 = GameObject.Find("Player1Camera");
-                camera1.transform.position = directionPlayer1 * Time.deltaTime;
+                _player1Speed += directionPlayer1;
+                _player1Speed = Vector2.ClampMagnitude(_player1Speed, _moveSpeed);
             }
+            _player1Camera.transform.position += AxisToPlayer(_player1Speed) * _moveSpeed * Time.deltaTime;
+            _player1Speed /= _inertiaFactor;
 
             var directionPlayer2 = _controls.GameMap.Player2Move.ReadValue<Vector2>();
             if (directionPlayer2 != Vector2.zero)
             {
-                var camera2 = GameObject.Find("Player2Camera");
-                camera2.transform.position = directionPlayer2 * Time.deltaTime;
+                directionPlayer2.x *= -1; // Reverse X.
+                _player2Speed += directionPlayer2;
+                _player2Speed = Vector2.ClampMagnitude(_player2Speed, _moveSpeed);
             }
+            _player2Camera.transform.position += AxisToPlayer(_player2Speed) * _moveSpeed * Time.deltaTime;
+            _player2Speed /= _inertiaFactor;
+        }
+
+        private void Update()
+        {
+            MoveCameras();
         }
 
         private void OnLaunchBall(CallbackContext context)
