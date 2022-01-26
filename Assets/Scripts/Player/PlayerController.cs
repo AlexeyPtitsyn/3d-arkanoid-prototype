@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
+using UnityEditor;
 
 namespace Player
 {
@@ -33,9 +34,10 @@ namespace Player
 
             _controls.GameMap.LaunchBall.performed += OnLaunchBall;
 
-            if(!_player1Camera || !_player2Camera)
+            if(_player1Camera is null || _player2Camera is null)
             {
                 Debug.LogError("Player cameras are not set. Set them.");
+                UnityEditor.EditorApplication.isPlaying = false;
             }
 
             _player1Camera.GetComponent<CameraController>().OnCollision += OnCamera1Collision;
