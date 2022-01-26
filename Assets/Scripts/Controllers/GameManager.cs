@@ -43,10 +43,46 @@ namespace Controllers
 
             Ball.OnCollision += OnBallCollision;
             Ball.OnTrigger += OnBallTrigger;
+
+            InitLevel();
+        }
+
+        void InitLevel()
+        {
+            // TODO: improve this, so there can be many levels.
+            var level = GameObject.Find("Well");
+
+            List<GameObject> blocks = new List<GameObject>();
+            foreach(Transform child in level.transform)
+            {
+                if(child.name == "Blocks")
+                {
+                    foreach(Transform block in child)
+                    {
+                        blocks.Add(block.gameObject);
+                    }
+                }
+            }
+
+            foreach (GameObject block in blocks)
+            {
+                block.transform.rotation = GiveMeRandomEuler();
+            }
+        }
+
+        Quaternion GiveMeRandomEuler()
+        {
+            return Quaternion.Euler(
+                Random.Range(0, 5),
+                Random.Range(0, 5),
+                Random.Range(0, 5)
+            );
         }
 
         void LoseHealth(Players blame)
         {
+            StopCoroutine(BallMovementCoroutine());
+
             Debug.Log($"{blame}, unfortunately, lost ball.");
 
             _ballMoveVector = Vector3.zero;
@@ -81,6 +117,12 @@ namespace Controllers
         void OnBallCollision(Collision collision)
         {
             _ballMoveVector = Vector3.Reflect(_ballMoveVector, collision.contacts[0].normal);
+
+            if (collision.gameObject.tag == "Block")
+            {
+                Destroy(collision.gameObject);
+                // TODO: reduce list.
+            }
         }
 
         void OnAlignBall(Vector3 coords)
