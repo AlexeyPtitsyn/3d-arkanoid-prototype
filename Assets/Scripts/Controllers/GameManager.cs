@@ -14,8 +14,8 @@ namespace Controllers
     {
         private PlayerController _playerController;
 
-        [SerializeField, Tooltip("Wire up ball here")]
-        private BallController _ball;
+        [SerializeField, Tooltip("Wire up the ball here")]
+        public BallController Ball;
 
         [SerializeField, Tooltip("Who starts the game?")]
         private Players _initialBallOwner = Players.Player1;
@@ -31,11 +31,18 @@ namespace Controllers
             _playerController.BallOwner = _initialBallOwner;
             _playerController.OnAlignBall += OnAlignBall;
             _playerController.OnLaunchBall += OnLaunchBall;
+
+            Ball.OnCollision += OnBallCollision;
+        }
+
+        void OnBallCollision(Collision collision)
+        {
+            _ballMoveVector = Vector3.Reflect(_ballMoveVector, collision.contacts[0].normal);
         }
 
         void OnAlignBall(Vector3 coords)
         {
-            _ball.gameObject.transform.position = coords;
+            Ball.gameObject.transform.position = coords;
         }
 
         void OnLaunchBall()
@@ -57,7 +64,7 @@ namespace Controllers
         {
             while(true)
             {
-                _ball.gameObject.transform.position += _ballMoveVector * _ballMoveSpeed * Time.deltaTime;
+                Ball.gameObject.transform.position += _ballMoveVector * _ballMoveSpeed * Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
         }

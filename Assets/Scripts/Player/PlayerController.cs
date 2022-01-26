@@ -4,6 +4,7 @@ using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEditor;
 using Structs;
+using Controllers;
 
 namespace Player
 {
@@ -37,6 +38,8 @@ namespace Player
         private Vector2 _player1Speed = new Vector2(0, 0);
         private Vector2 _player2Speed = new Vector2(0, 0);
 
+        private GameManager _gameManager;
+
         private void Awake()
         {
             _controls = new PlayerControls();
@@ -51,6 +54,8 @@ namespace Player
 
             _player1Camera.GetComponent<CameraController>().OnCollision += OnCamera1Collision;
             _player2Camera.GetComponent<CameraController>().OnCollision += OnCamera2Collision;
+
+            _gameManager = GetComponent<GameManager>();
         }
 
         /**
@@ -58,6 +63,8 @@ namespace Player
          */
         private void OnCamera1Collision(Collision collision)
         {
+            if (collision.gameObject == _gameManager.Ball.gameObject) return;
+
             foreach (ContactPoint contact in collision.contacts)
             {
                 _player1Speed = contact.normal * _outForce;
@@ -69,6 +76,8 @@ namespace Player
          */
         private void OnCamera2Collision(Collision collision)
         {
+            if (collision.gameObject == _gameManager.Ball.gameObject) return;
+
             foreach (ContactPoint contact in collision.contacts)
             {
                 _player2Speed = contact.normal * _outForce;
