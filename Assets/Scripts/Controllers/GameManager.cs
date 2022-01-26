@@ -25,6 +25,15 @@ namespace Controllers
         [SerializeField, Range(.5f, 5f)]
         private float _ballMoveSpeed = 1f;
 
+        [SerializeField, Tooltip("Number of player lives")]
+        private int _lives = 3;
+
+        [SerializeField]
+        private GameObject _player1Gates;
+
+        [SerializeField]
+        private GameObject _player2Gates;
+
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();
@@ -33,6 +42,40 @@ namespace Controllers
             _playerController.OnLaunchBall += OnLaunchBall;
 
             Ball.OnCollision += OnBallCollision;
+            Ball.OnTrigger += OnBallTrigger;
+        }
+
+        void LoseHealth(Players blame)
+        {
+            Debug.Log($"{blame}, unfortunately, lost ball.");
+
+            _ballMoveVector = Vector3.zero;
+            _playerController.BallOwner = blame;
+
+            _lives--;
+            if(_lives <= 0)
+            {
+                GameOver();
+            }
+        }
+
+        void GameOver()
+        {
+            Debug.Log("Game over.");
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+
+        void OnBallTrigger(Collider other)
+        {
+            if(other.gameObject == _player1Gates)
+            {
+                LoseHealth(Players.Player1);
+            }
+
+            if(other.gameObject == _player2Gates)
+            {
+                LoseHealth(Players.Player2);
+            }
         }
 
         void OnBallCollision(Collision collision)
