@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEditor;
+using Structs;
 
 namespace Player
 {
+    public delegate void LaunchBall();
+    public delegate void AlignBall(Vector3 coords);
+
     public class PlayerController : MonoBehaviour
     {
+        public event LaunchBall OnLaunchBall;
+        public event AlignBall OnAlignBall;
+
         [SerializeField, Tooltip("Attach camera 1 here")]
         private Camera _player1Camera;
 
@@ -23,6 +30,8 @@ namespace Player
         [SerializeField, Range(1.5f, 4f), Tooltip("Force, that moves player out of the wall.")]
         private float _outForce = 1.5f;
 
+        public Players? BallOwner = null;
+
         private PlayerControls _controls;
 
         private Vector2 _player1Speed = new Vector2(0, 0);
@@ -32,12 +41,12 @@ namespace Player
         {
             _controls = new PlayerControls();
 
-            _controls.GameMap.LaunchBall.performed += OnLaunchBall;
+            _controls.GameMap.LaunchBall.performed += OnLaunchButtonPress;
 
             if(_player1Camera is null || _player2Camera is null)
             {
                 Debug.LogError("Player cameras are not set. Set them.");
-                UnityEditor.EditorApplication.isPlaying = false;
+                EditorApplication.isPlaying = false;
             }
 
             _player1Camera.GetComponent<CameraController>().OnCollision += OnCamera1Collision;
@@ -77,6 +86,15 @@ namespace Player
         }
 
         /**
+         * <summary>Align ball if it is in player's hands</summary>
+         * <param name="coords">Coordinates of the ball</param>
+         */
+        private void AlignBall(Vector3 coords)
+        {
+            OnAlignBall?.Invoke(coords);
+        }
+
+        /**
          * <summary>Move cameras while update</summary>
          */
         private void MoveCameras()
@@ -90,6 +108,12 @@ namespace Player
             _player1Camera.transform.position += AxisToPlayer(_player1Speed) * _moveSpeed * Time.deltaTime;
             _player1Speed /= _inertiaFactor;
 
+            if(BallOwner == Players.Player1)
+            {
+                var pos = _player1Camera.transform.position;
+                AlignBall(new Vector3(pos.x, pos.y, pos.z + 1));
+            }
+
             var directionPlayer2 = _controls.GameMap.Player2Move.ReadValue<Vector2>();
             if (directionPlayer2 != Vector2.zero)
             {
@@ -99,6 +123,12 @@ namespace Player
             }
             _player2Camera.transform.position += AxisToPlayer(_player2Speed) * _moveSpeed * Time.deltaTime;
             _player2Speed /= _inertiaFactor;
+
+            if (BallOwner == Players.Player2)
+            {
+                var pos = _player2Camera.transform.position;
+                AlignBall(new Vector3(pos.x, pos.y, pos.z - 1));
+            }
         }
 
         private void Update()
@@ -106,9 +136,15 @@ namespace Player
             MoveCameras();
         }
 
-        private void OnLaunchBall(CallbackContext context)
+        private void OnLaunchButtonPress(CallbackContext context)
         {
-            Debug.Log("Will launch ball.");
+            if(BallOwner is null)
+            {
+                return;
+            }
+
+            OnLaunchBall?.Invoke();
+            BallOwner = null;
         }
 
         private void OnDestroy()

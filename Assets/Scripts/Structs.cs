@@ -6,17 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Structs : MonoBehaviour
+namespace Structs
 {
-    // Start is called before the first frame update
-    void Start()
+    public enum Players
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Player1,
+        Player2
     }
 }
