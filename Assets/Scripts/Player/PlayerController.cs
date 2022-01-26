@@ -19,6 +19,9 @@ namespace Player
         [SerializeField, Range(1.001f, 2), Tooltip("How fast the player will be slown down.")]
         private float _inertiaFactor = 1.05f;
 
+        [SerializeField, Range(1.5f, 4f), Tooltip("Force, that moves player out of the wall.")]
+        private float _outForce = 1.5f;
+
         private PlayerControls _controls;
 
         private Vector2 _player1Speed = new Vector2(0, 0);
@@ -46,7 +49,7 @@ namespace Player
         {
             foreach (ContactPoint contact in collision.contacts)
             {
-                _player1Speed = contact.normal * 1.5f;
+                _player1Speed = contact.normal * _outForce;
             }
         }
 
@@ -57,7 +60,7 @@ namespace Player
         {
             foreach (ContactPoint contact in collision.contacts)
             {
-                _player2Speed = contact.normal * 1.5f;
+                _player2Speed = contact.normal * _outForce;
             }
         }
 
