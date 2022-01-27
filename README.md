@@ -3,6 +3,8 @@ A two-player 3D arkanoid, written in C# (with UNITY). The game don't use Unity p
 
 Since this is a prototype, it will not include models, sounds, textures and so on.
 
+![Screenshot](Docs/Images/screen.png)
+
 ## Requirements
 - Unity version: 2019.4.1f1.
 - Input System package version: 1.0.0.
