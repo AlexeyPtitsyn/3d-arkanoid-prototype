@@ -712,6 +712,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Ball: {fileID: 2089342747}
   _initialBallOwner: 0
+  _hitAcceleration: 1
+  _hitAccelerationLimit: 5
   _ballMoveSpeed: 1
   _lives: 3
   _player1Gates: {fileID: 473783035}
@@ -3600,7 +3602,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2089342742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.29, y: -4.54, z: 7.38}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}

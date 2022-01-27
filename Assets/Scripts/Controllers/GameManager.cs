@@ -22,6 +22,14 @@ namespace Controllers
 
         private Vector3 _ballMoveVector = Vector3.zero;
 
+        [SerializeField, Range(1f, 5f), Tooltip("Ball acceleration after hitting a block.")]
+        private float _hitAcceleration = 1f;
+
+        [SerializeField, Range(1f, 5f), Tooltip("Maximum ball acceleration after hitting a series of blocks.")]
+        private float _hitAccelerationLimit = 5f;
+
+        private float _hitCurrentAcceleration = 1f;
+
         [SerializeField, Range(.5f, 5f)]
         private float _ballMoveSpeed = 1f;
 
@@ -87,6 +95,7 @@ namespace Controllers
 
             _ballMoveVector = Vector3.zero;
             _playerController.BallOwner = blame;
+            _hitCurrentAcceleration = 1f;
 
             _lives--;
             if(_lives <= 0)
@@ -120,6 +129,12 @@ namespace Controllers
 
             if (collision.gameObject.tag == "Block")
             {
+                _hitCurrentAcceleration += _hitAcceleration;
+                if(_hitAcceleration >= _hitAccelerationLimit)
+                {
+                    _hitAcceleration = _hitAccelerationLimit;
+                }
+
                 Destroy(collision.gameObject);
                 // TODO: reduce list.
             }
@@ -149,8 +164,9 @@ namespace Controllers
         {
             while(true)
             {
-                Ball.gameObject.transform.position += _ballMoveVector * _ballMoveSpeed * Time.deltaTime;
-                yield return new WaitForEndOfFrame();
+                _ballMoveVector = _ballMoveVector.normalized;
+                Ball.gameObject.transform.position += _ballMoveVector * _hitCurrentAcceleration * _ballMoveSpeed * Time.deltaTime;
+                yield return null;
             }
         }
     }
