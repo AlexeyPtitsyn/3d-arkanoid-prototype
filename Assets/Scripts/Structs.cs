@@ -1,5 +1,5 @@
 ﻿// Global-available structs.
-// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
+// Copyright Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 
 namespace Structs
 {

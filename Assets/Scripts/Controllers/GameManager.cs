@@ -1,5 +1,5 @@
 ﻿// This is the main game controller. All gameplay magic lies here.
-// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
+// Copyright Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

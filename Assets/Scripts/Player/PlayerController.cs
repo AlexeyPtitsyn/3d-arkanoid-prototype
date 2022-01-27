@@ -1,5 +1,5 @@
 ﻿// Two-player controller. Player movement and events.
-// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
+// Copyright Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEditor;

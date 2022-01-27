@@ -1,6 +1,6 @@
 ﻿// Certain player controller. Does nothing - just passes events to general
 // player controller.
-// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
+// Copyright Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using UnityEngine;
 
 namespace Player
