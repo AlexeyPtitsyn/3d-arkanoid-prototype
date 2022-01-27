@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// Two-player controller. Player movement and events.
+// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEditor;
@@ -86,7 +86,7 @@ namespace Player
 
         /**
          * <summary>Transform joystick/keyboard controls force to vector3</summary>
-         * <param name="axis">Vecto2 input axis.</param>
+         * <param name="axis">Vector2 input axis.</param>
          * <returns>Vector3 of camera movement direction</returns>
          */
         private Vector3 AxisToPlayer(Vector2 axis)
@@ -145,6 +145,9 @@ namespace Player
             MoveCameras();
         }
 
+        /**
+         * <summary>Fired when launch button pressed.</summary>
+         */
         private void OnLaunchButtonPress(CallbackContext context)
         {
             if(BallOwner is null)

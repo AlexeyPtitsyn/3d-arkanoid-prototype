@@ -1,5 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// Certain player controller. Does nothing - just passes events to general
+// player controller.
+// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using UnityEngine;
 
 namespace Player

@@ -1,6 +1,5 @@
-﻿/**
- * <summary>This is the main game controller.</summary>
- */
+﻿// This is the main game controller. All gameplay magic lies here.
+// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +19,6 @@ namespace Controllers
         [SerializeField, Tooltip("Who starts the game?")]
         private Players _initialBallOwner = Players.Player1;
 
-        [SerializeField]
         private Vector3 _ballMoveVector = Vector3.zero;
 
         [SerializeField, Range(.1f, 5f), Tooltip("Ball acceleration after hitting a block.")]
@@ -34,7 +32,7 @@ namespace Controllers
         [SerializeField, Range(.5f, 5f)]
         private float _ballMoveSpeed = 1f;
 
-        [SerializeField, Tooltip("Number of player lives")]
+        [SerializeField, Tooltip("Number of players lives")]
         private int _lives = 3;
 
         [SerializeField]
@@ -66,6 +64,9 @@ namespace Controllers
             InitLevel();
         }
 
+        /**
+         * <summary>Detect levels on scene.</summary>
+         */
         bool InitLevels()
         {
             Debug.Log("Init levels...");
@@ -87,6 +88,9 @@ namespace Controllers
             return false;
         }
 
+        /**
+         * <summary>Fired when the last level block disappeared.</summary>
+         */
         void OnCompleteLevel()
         {
             StopAllCoroutines();
@@ -102,6 +106,9 @@ namespace Controllers
             InitLevel();
         }
 
+        /**
+         * <summary>Move all levels away from gameplay center.</summary>
+         */
         void MoveAwayAllLevels()
         {
             foreach(var level in _levels)
@@ -110,6 +117,9 @@ namespace Controllers
             }
         }
 
+        /**
+         * <summary>Load one level. Count blocks. Init ball.</summary>
+         */
         void InitLevel()
         {
             MoveAwayAllLevels();
@@ -122,7 +132,7 @@ namespace Controllers
 
             _blocksCount = 0;
             StopAllCoroutines();
-            _playerController.BallOwner = Players.Player1;
+            _playerController.BallOwner = _initialBallOwner;
             _hitCurrentAcceleration = 1f;
             _ballMoveVector = Vector3.zero;
 
@@ -145,6 +155,9 @@ namespace Controllers
             }
         }
 
+        /**
+         * <summary>Returns random euler angle.</summary>
+         */
         Quaternion GiveMeRandomEuler()
         {
             return Quaternion.Euler(
@@ -154,6 +167,10 @@ namespace Controllers
             );
         }
 
+        /**
+         * <summary>Fired when player loses health.</summary>
+         * <param name="blame">Player that lost the ball.</param>
+         */
         void LoseHealth(Players blame)
         {
             StopAllCoroutines();
@@ -171,6 +188,9 @@ namespace Controllers
             }
         }
 
+        /**
+         * <summary>Fired on game end (levels passed, all lives lost).</summary>
+         */
         void GameOver()
         {
             StopAllCoroutines();
@@ -178,6 +198,9 @@ namespace Controllers
             UnityEditor.EditorApplication.isPlaying = false;
         }
 
+        /**
+         * <summary>Ball trigger smth callback.</summary>
+         */
         void OnBallTrigger(Collider other)
         {
             if(other.gameObject == _player1Gates)
@@ -191,6 +214,9 @@ namespace Controllers
             }
         }
 
+        /**
+         * <summary>Ball collision callback.</summary>
+         */
         void OnBallCollision(Collision collision)
         {
             _ballMoveVector = Vector3.Reflect(_ballMoveVector, collision.contacts[0].normal);
@@ -209,11 +235,18 @@ namespace Controllers
             }
         }
 
+        /**
+         * <summary>Align ball by coords.</summary>
+         * <param name="coords">New ball coords.</param>
+         */
         void OnAlignBall(Vector3 coords)
         {
             Ball.gameObject.transform.position = coords;
         }
 
+        /**
+         * <summary>Launch ball button fired.</summary>
+         */
         void OnLaunchBall()
         {
             switch (_playerController.BallOwner)
@@ -229,6 +262,9 @@ namespace Controllers
             StartCoroutine(BallMovementCoroutine());
         }
 
+        /**
+         * <summary>Regular ball movement.</summary>
+         */
         IEnumerator BallMovementCoroutine()
         {
             while(true)

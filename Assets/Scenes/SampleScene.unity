@@ -1026,7 +1026,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Ball: {fileID: 2089342747}
   _initialBallOwner: 0
-  _ballMoveVector: {x: 0, y: 0, z: 0}
   _hitAcceleration: 1
   _hitAccelerationLimit: 2
   _ballMoveSpeed: 1

@@ -1,10 +1,5 @@
-﻿/**
- * <summary>Here there be structs.</summary>
- */
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿// Global-available structs.
+// Alexey Ptitsyn <alexey.ptitsyn@gmail.com>, 2022
 
 namespace Structs
 {
