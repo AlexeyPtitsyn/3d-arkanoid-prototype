@@ -89,6 +89,8 @@ namespace Controllers
 
         void OnCompleteLevel()
         {
+            StopAllCoroutines();
+
             _levelNumber++;
             if(_levelNumber >= _levels.Count)
             {
@@ -119,7 +121,7 @@ namespace Controllers
             level.transform.position = Vector3.zero;
 
             _blocksCount = 0;
-            StopCoroutine(BallMovementCoroutine());
+            StopAllCoroutines();
             _playerController.BallOwner = Players.Player1;
             _hitCurrentAcceleration = 1f;
             _ballMoveVector = Vector3.zero;
@@ -154,7 +156,7 @@ namespace Controllers
 
         void LoseHealth(Players blame)
         {
-            StopCoroutine(BallMovementCoroutine());
+            StopAllCoroutines();
 
             Debug.Log($"{blame}, unfortunately, lost ball.");
 
@@ -171,7 +173,7 @@ namespace Controllers
 
         void GameOver()
         {
-            StopCoroutine(BallMovementCoroutine());
+            StopAllCoroutines();
             Debug.Log("Game over.");
             UnityEditor.EditorApplication.isPlaying = false;
         }
