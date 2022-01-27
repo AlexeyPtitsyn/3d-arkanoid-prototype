@@ -20,10 +20,11 @@ namespace Controllers
         [SerializeField, Tooltip("Who starts the game?")]
         private Players _initialBallOwner = Players.Player1;
 
+        [SerializeField]
         private Vector3 _ballMoveVector = Vector3.zero;
 
-        [SerializeField, Range(1f, 5f), Tooltip("Ball acceleration after hitting a block.")]
-        private float _hitAcceleration = 1f;
+        [SerializeField, Range(.1f, 5f), Tooltip("Ball acceleration after hitting a block.")]
+        private float _hitAcceleration = .5f;
 
         [SerializeField, Range(1f, 5f), Tooltip("Maximum ball acceleration after hitting a series of blocks.")]
         private float _hitAccelerationLimit = 5f;
@@ -42,6 +43,10 @@ namespace Controllers
         [SerializeField]
         private GameObject _player2Gates;
 
+        private int _blocksCount = 0;
+        private List<GameObject> _levels = new List<GameObject>();
+        private int? _levelNumber;
+
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();
@@ -52,13 +57,72 @@ namespace Controllers
             Ball.OnCollision += OnBallCollision;
             Ball.OnTrigger += OnBallTrigger;
 
+            InitLevels();
+            if(_levelNumber is null)
+            {
+                Debug.LogWarning("No levels found. Unable to continue.");
+                GameOver();
+            }
             InitLevel();
+        }
+
+        bool InitLevels()
+        {
+            Debug.Log("Init levels...");
+            var levelContainer = GameObject.Find("Levels");
+            int count = 0;
+            foreach(Transform child in levelContainer.transform)
+            {
+                count++;
+                _levels.Add(child.gameObject);
+            }
+
+            if(count > 0)
+            {
+                Debug.Log($"...found {count} levels.");
+                _levelNumber = 0;
+                return true;
+            }
+            _levelNumber = null;
+            return false;
+        }
+
+        void OnCompleteLevel()
+        {
+            _levelNumber++;
+            if(_levelNumber >= _levels.Count)
+            {
+                Debug.Log("Players passed all levels.");
+                GameOver();
+                return;
+            }
+
+            InitLevel();
+        }
+
+        void MoveAwayAllLevels()
+        {
+            foreach(var level in _levels)
+            {
+                level.transform.position = new Vector3(100, 100, 100);
+            }
         }
 
         void InitLevel()
         {
-            // TODO: improve this, so there can be many levels.
-            var level = GameObject.Find("Well");
+            MoveAwayAllLevels();
+
+            var level = _levels[(int)_levelNumber];
+
+            Debug.Log($"Entering {level.name}...");
+
+            level.transform.position = Vector3.zero;
+
+            _blocksCount = 0;
+            StopCoroutine(BallMovementCoroutine());
+            _playerController.BallOwner = Players.Player1;
+            _hitCurrentAcceleration = 1f;
+            _ballMoveVector = Vector3.zero;
 
             List<GameObject> blocks = new List<GameObject>();
             foreach(Transform child in level.transform)
@@ -67,6 +131,7 @@ namespace Controllers
                 {
                     foreach(Transform block in child)
                     {
+                        _blocksCount++;
                         blocks.Add(block.gameObject);
                     }
                 }
@@ -106,6 +171,7 @@ namespace Controllers
 
         void GameOver()
         {
+            StopCoroutine(BallMovementCoroutine());
             Debug.Log("Game over.");
             UnityEditor.EditorApplication.isPlaying = false;
         }
@@ -130,13 +196,14 @@ namespace Controllers
             if (collision.gameObject.tag == "Block")
             {
                 _hitCurrentAcceleration += _hitAcceleration;
-                if(_hitAcceleration >= _hitAccelerationLimit)
-                {
-                    _hitAcceleration = _hitAccelerationLimit;
-                }
 
                 Destroy(collision.gameObject);
-                // TODO: reduce list.
+                _blocksCount--;
+                if(_blocksCount <= 0)
+                {
+                    OnCompleteLevel();
+                    return;
+                }
             }
         }
 
@@ -164,6 +231,11 @@ namespace Controllers
         {
             while(true)
             {
+                if (_hitCurrentAcceleration >= _hitAccelerationLimit)
+                {
+                    _hitCurrentAcceleration = _hitAccelerationLimit;
+                }
+
                 _ballMoveVector = _ballMoveVector.normalized;
                 Ball.gameObject.transform.position += _ballMoveVector * _hitCurrentAcceleration * _ballMoveSpeed * Time.deltaTime;
                 yield return null;
